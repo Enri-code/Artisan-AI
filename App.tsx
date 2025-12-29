@@ -12,7 +12,7 @@ import {
   Alert,
   FlatList,
   Linking
-} from 'react-native';
+} from 'react-native-web';
 import { AppState, View as AppView, GalleryItem } from './types';
 import { ART_STYLES } from './constants';
 import { generateArt } from './services/geminiService';
@@ -22,8 +22,6 @@ import StyleSelector from './components/StyleSelector';
 const STORAGE_KEY = 'artisan_gallery_v2';
 const { width } = Dimensions.get('window');
 
-// Removed conflicting global window.aistudio declaration as it is provided by the environment.
-
 const App: React.FC = () => {
   const [hasKey, setHasKey] = useState<boolean | null>(null);
   const [state, setState] = useState<AppState>({
@@ -31,6 +29,7 @@ const App: React.FC = () => {
     image: null,
     selectedStyle: null,
     processedImage: null,
+    // Fix: Remove the 'boolean =' type annotation/assignment which is invalid in an object literal.
     isProcessing: false,
     error: null,
     gallery: [],
@@ -40,9 +39,14 @@ const App: React.FC = () => {
   // Check for API key on mount
   useEffect(() => {
     const checkKey = async () => {
-      // Use type assertion for platform-provided aistudio helper
-      const selected = await (window as any).aistudio.hasSelectedApiKey();
-      setHasKey(selected);
+      const aistudio = (window as any).aistudio;
+      if (aistudio) {
+        const selected = await aistudio.hasSelectedApiKey();
+        setHasKey(selected);
+      } else {
+        // Fallback for environments where aistudio is not injected
+        setHasKey(true);
+      }
     };
     checkKey();
 
@@ -61,9 +65,10 @@ const App: React.FC = () => {
   }, [state.gallery]);
 
   const handleSelectKey = async () => {
-    // Use type assertion for platform-provided aistudio helper
-    await (window as any).aistudio.openSelectKey();
-    // Guideline: Assume success after calling openSelectKey to avoid race conditions
+    const aistudio = (window as any).aistudio;
+    if (aistudio) {
+      await aistudio.openSelectKey();
+    }
     setHasKey(true);
   };
 
@@ -108,7 +113,7 @@ const App: React.FC = () => {
           <i className="fas fa-key" style={{ fontSize: 60, color: '#d4af37', marginBottom: 20 }}></i>
           <Text style={styles.setupTitle}>UNLOCK THE STUDIO</Text>
           <Text style={styles.setupSubtitle}>
-            To create high-fidelity AI art, you must select your own Google Gemini API key from a paid GCP project.
+            To create high-fidelity AI art with Gemini 3 Pro, you must select your own Google Gemini API key.
           </Text>
           
           <TouchableOpacity style={styles.primaryButton} onPress={handleSelectKey}>
@@ -238,9 +243,11 @@ const App: React.FC = () => {
       <View style={styles.frameWrapper}>
         <View style={styles.museumFrame}>
           <Image source={{ uri: state.processedImage! }} style={styles.framedImage} />
-          <View style={styles.plaque}>
-            <Text style={styles.plaqueText}>Artisan AI Study - {state.selectedStyle?.name}</Text>
-          </View>
+          <div style={{ position: 'absolute', bottom: -12, left: 0, right: 0, alignItems: 'center', justifyContent: 'center', display: 'flex' }}>
+            <View style={styles.plaque}>
+               <Text style={styles.plaqueText}>Artisan AI Study - {state.selectedStyle?.name}</Text>
+            </View>
+          </div>
         </View>
       </View>
       <View style={styles.resultActions}>
@@ -523,9 +530,6 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   plaque: {
-    position: 'absolute',
-    bottom: -12,
-    alignSelf: 'center',
     backgroundColor: '#ddd',
     paddingHorizontal: 15,
     paddingVertical: 4,

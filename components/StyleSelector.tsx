@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native-web';
 import { ArtStyle } from '../types';
 import { ART_STYLES } from '../constants';
 
