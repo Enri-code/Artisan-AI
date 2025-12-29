@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { ArtStyle } from '../types';
 import { ART_STYLES } from '../constants';
 
@@ -10,31 +11,73 @@ interface StyleSelectorProps {
 
 const StyleSelector: React.FC<StyleSelectorProps> = ({ selectedStyleId, onSelect }) => {
   return (
-    <div className="w-full">
-      <div className="flex overflow-x-auto pb-4 gap-4 px-2 snap-x">
-        {ART_STYLES.map((style) => (
-          <button
-            key={style.id}
-            onClick={() => onSelect(style)}
-            className={`flex-shrink-0 w-32 snap-start transition-all duration-300 ${
-              selectedStyleId === style.id 
-                ? 'scale-105 opacity-100' 
-                : 'opacity-60 grayscale hover:grayscale-0 hover:opacity-90'
-            }`}
-          >
-            <div className={`relative rounded-xl overflow-hidden aspect-[3/4] mb-2 ${
-              selectedStyleId === style.id ? 'ring-2 ring-yellow-500 ring-offset-2 ring-offset-[#0f1115]' : ''
-            }`}>
-              <img src={style.previewUrl} alt={style.name} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-2">
-                <span className="text-xs font-semibold text-white truncate w-full">{style.name}</span>
-              </div>
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
+    <ScrollView 
+      horizontal 
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.container}
+    >
+      {ART_STYLES.map((style) => (
+        <TouchableOpacity
+          key={style.id}
+          onPress={() => onSelect(style)}
+          activeOpacity={0.7}
+          style={[
+            styles.item,
+            selectedStyleId === style.id && styles.itemSelected
+          ]}
+        >
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: style.previewUrl }} style={styles.image} />
+            <View style={styles.labelOverlay}>
+              <Text style={styles.labelText} numberOfLines={1}>{style.name}</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 12,
+    paddingBottom: 10,
+  },
+  item: {
+    width: 110,
+    marginHorizontal: 6,
+    borderRadius: 12,
+    overflow: 'hidden',
+    opacity: 0.6,
+  },
+  itemSelected: {
+    opacity: 1,
+    transform: [{ scale: 1.05 }],
+    borderWidth: 2,
+    borderColor: '#d4af37',
+  },
+  imageContainer: {
+    aspectRatio: 3/4,
+    backgroundColor: '#333',
+  },
+  image: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+  labelOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 6,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
+  labelText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  }
+});
 
 export default StyleSelector;

@@ -1,21 +1,23 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { View, StyleSheet, TouchableOpacity, Text, Dimensions } from 'react-native';
 
 interface CameraProps {
   onCapture: (image: string) => void;
   onCancel: () => void;
 }
 
+const { width, height } = Dimensions.get('window');
+
 const Camera: React.FC<CameraProps> = ({ onCapture, onCancel }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isReady, setIsReady] = useState(false);
-  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
 
   const startCamera = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode },
+        video: { facingMode: 'environment' },
         audio: false
       });
       if (videoRef.current) {
@@ -24,10 +26,9 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onCancel }) => {
       }
     } catch (err) {
       console.error("Camera access error:", err);
-      alert("Please allow camera access to take photos.");
       onCancel();
     }
-  }, [facingMode, onCancel]);
+  }, [onCancel]);
 
   useEffect(() => {
     startCamera();
@@ -54,50 +55,79 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onCancel }) => {
     }
   };
 
-  const toggleCamera = () => {
-    setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
-  };
-
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col">
-      <div className="relative flex-1 flex items-center justify-center overflow-hidden">
-        <video 
-          ref={videoRef} 
-          autoPlay 
-          playsInline 
-          className="w-full h-full object-cover"
-        />
-        <canvas ref={canvasRef} className="hidden" />
-        
-        {/* Top Controls */}
-        <div className="absolute top-6 left-6 right-6 flex justify-between items-center">
-          <button 
-            onClick={onCancel}
-            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white"
-          >
-            <i className="fas fa-times text-lg"></i>
-          </button>
-          <button 
-            onClick={toggleCamera}
-            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white"
-          >
-            <i className="fas fa-sync-alt text-lg"></i>
-          </button>
-        </div>
+    <View style={styles.container}>
+      <video 
+        ref={videoRef as any} 
+        autoPlay 
+        playsInline 
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+      />
+      <canvas ref={canvasRef as any} style={{ display: 'none' }} />
+      
+      <View style={styles.overlay}>
+        <View style={styles.topBar}>
+          <TouchableOpacity onPress={onCancel} style={styles.iconButton}>
+             <i className="fas fa-times" style={{ color: 'white', fontSize: 20 }}></i>
+          </TouchableOpacity>
+        </View>
 
-        {/* Shutter Section */}
-        <div className="absolute bottom-10 left-0 right-0 flex justify-center items-center gap-10">
-          <button 
-            onClick={capture}
+        <View style={styles.bottomBar}>
+          <TouchableOpacity 
+            onPress={capture}
             disabled={!isReady}
-            className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center active:scale-95 transition-transform"
+            style={styles.shutterButton}
           >
-            <div className="w-16 h-16 rounded-full bg-white"></div>
-          </button>
-        </div>
-      </div>
-    </div>
+            <View style={styles.shutterInner} />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'space-between',
+    padding: 24,
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginTop: 20,
+  },
+  bottomBar: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  shutterButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 4,
+    borderColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  shutterInner: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'white',
+  }
+});
 
 export default Camera;
