@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Artisan AI - Museum Masterpiece Creator",
+  "description": "Transform your everyday photos into museum-worthy art masterpieces using advanced generative AI. Choose from legendary styles like Renaissance, Impressionism, and Cyberpunk, and share your creations instantly.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
