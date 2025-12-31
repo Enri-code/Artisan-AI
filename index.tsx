@@ -1,10 +1,14 @@
-
 import React from 'react';
-import { AppRegistry } from 'react-native-web';
+import { AppRegistry } from 'react-native';
 import App from './App';
 
+// Explicitly register and run for web environment
 AppRegistry.registerComponent('App', () => App);
-AppRegistry.runApplication('App', {
-  initialProps: {},
-  rootTag: document.getElementById('root'),
-});
+
+const rootTag = document.getElementById('root');
+if (rootTag) {
+  (AppRegistry as any).runApplication('App', {
+    initialProps: {},
+    rootTag,
+  });
+}

@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native-web';
+// Changed import source to react-native to fix type conflicts
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { ArtStyle } from '../types';
 import { ART_STYLES } from '../constants';
 
@@ -38,6 +39,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({ selectedStyleId, onSelect
   );
 };
 
+// Fixed StyleSheet type errors
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 12,
