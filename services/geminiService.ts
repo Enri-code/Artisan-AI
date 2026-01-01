@@ -3,15 +3,16 @@ import { GoogleGenAI } from "@google/genai";
 
 /**
  * Generates art using the user-selected Gemini API key.
- * The instance is created per-call to ensure it uses the latest process.env.API_KEY.
+ * Uses gemini-3-pro-image-preview for high-quality production results.
  */
 export const generateArt = async (base64Image: string, prompt: string): Promise<string> => {
   const API_KEY = process.env.API_KEY;
   if (!API_KEY) {
-    throw new Error("No API Key selected. Please select your key first.");
+    throw new Error("No API Key selected. Access to the Artisan Studio requires a valid key.");
   }
 
-  // Create instance right before making an API call to ensure use of latest injected key
+  // Guidelines: Create a new instance right before making an API call 
+  // to ensure it uses the most up-to-date API key from the dialog.
   const ai = new GoogleGenAI({ apiKey: API_KEY });
   
   try {
@@ -26,7 +27,7 @@ export const generateArt = async (base64Image: string, prompt: string): Promise<
             },
           },
           {
-            text: prompt + ". Output should be a single beautiful artistic image.",
+            text: `${prompt}. Create a single, uniquely beautiful, high-fidelity fine art masterpiece based on the content of this image.`,
           },
         ],
       },
@@ -39,7 +40,7 @@ export const generateArt = async (base64Image: string, prompt: string): Promise<
     });
 
     let generatedImageBase64 = '';
-    // Iterate through candidates and parts to find the image part as recommended
+    // Guidelines: Iterate through candidates and parts; do not assume the first part is an image part.
     if (response.candidates?.[0]?.content?.parts) {
       for (const part of response.candidates[0].content.parts) {
         if (part.inlineData) {
@@ -50,16 +51,18 @@ export const generateArt = async (base64Image: string, prompt: string): Promise<
     }
 
     if (!generatedImageBase64) {
-      throw new Error("The museum curator was unable to finalize your piece. Please try a different style.");
+      throw new Error("The rendering engine failed to produce an image. Please try a different artistic style.");
     }
 
     return generatedImageBase64;
   } catch (error: any) {
     console.error("Gemini Art Generation Error:", error);
-    // Reset key selection state if the requested entity (API key) was not found
+    
+    // Guidelines: If the request fails with "Requested entity was not found", reset key state.
     if (error?.message?.includes("Requested entity was not found")) {
       throw new Error("API_KEY_INVALID");
     }
-    throw error;
+    
+    throw new Error(error.message || "A technical error occurred in the museum's digital archive.");
   }
 };
