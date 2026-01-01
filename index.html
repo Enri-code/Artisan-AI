@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +9,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
         
-        /* Ensure the root container and body take up the full viewport */
+        /* Reset and layout stabilization for React Native Web 0.21.x */
         html, body, #root {
             margin: 0;
             padding: 0;
@@ -22,13 +21,13 @@
             flex-direction: column;
         }
 
-        /* Prevent system scrolling/bouncing which can break the mobile experience */
         body {
             position: fixed;
             touch-action: none;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Fix for potential blank screen issues in certain browser versions */
+        /* Ensure React Native Web views fill the container */
         #root > div {
             height: 100%;
             width: 100%;
@@ -39,12 +38,12 @@
     <script type="importmap">
     {
       "imports": {
-        "react-dom": "https://esm.sh/react-dom@19.2.3",
-        "react-dom/": "https://esm.sh/react-dom@19.2.3/",
         "react": "https://esm.sh/react@19.2.3",
         "react/": "https://esm.sh/react@19.2.3/",
-        "react-native-web": "https://esm.sh/react-native-web@0.21.2",
-        "react-native": "https://esm.sh/react-native-web@0.21.2",
+        "react-dom": "https://esm.sh/react-dom@19.2.3",
+        "react-dom/": "https://esm.sh/react-dom@19.2.3/",
+        "react-native": "https://esm.sh/react-native-web@0.21.2?external=react,react-dom",
+        "react-native-web": "https://esm.sh/react-native-web@0.21.2?external=react,react-dom",
         "@google/genai": "https://esm.sh/@google/genai@1.34.0"
       }
     }
@@ -52,5 +51,6 @@
 </head>
 <body>
     <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>
