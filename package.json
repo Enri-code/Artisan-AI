@@ -1,7 +1,7 @@
 {
   "name": "artisan-ai",
   "version": "1.0.0",
-  "description": "Museum quality art generation from photos",
+  "description": "Museum quality art generation from photos using Gemini 3 Pro",
   "type": "module",
   "scripts": {
     "dev": "vite",

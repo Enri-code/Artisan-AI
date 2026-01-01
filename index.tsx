@@ -2,15 +2,15 @@ import React from 'react';
 import { AppRegistry } from 'react-native';
 import App from './App';
 
-// Register the application component
+// Register the main Artisan AI component
 AppRegistry.registerComponent('App', () => App);
 
-// Get the root element from the DOM
+// In the browser context, we mount to the #root element
 const rootTag = document.getElementById('root');
 
 if (rootTag) {
-  // Using runApplication is the recommended way for react-native-web to handle 
-  // root mounting and automatic style sheet injection.
+  // runApplication handles the complex task of injecting RNW styles 
+  // and initializing the React root for the application.
   (AppRegistry as any).runApplication('App', {
     initialProps: {},
     rootTag,

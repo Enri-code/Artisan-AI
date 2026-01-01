@@ -9,7 +9,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
         
-        /* Reset and layout stabilization for React Native Web 0.21.x */
+        /* Stabilize layout for React Native Web 0.21.x and React 19 */
         html, body, #root {
             margin: 0;
             padding: 0;
@@ -27,7 +27,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Ensure React Native Web views fill the container */
+        /* Essential for React Native Web components to fill the flex container correctly */
         #root > div {
             height: 100%;
             width: 100%;
